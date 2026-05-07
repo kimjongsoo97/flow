@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="560" viewBox="0 0 980 560">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#334155"/>
+    </marker>
+    <style>
+      .title{font:700 24px Arial,sans-serif;fill:#111827}
+      .head{fill:#e8f1fb;stroke:#8fb0d3;stroke-width:1.5}
+      .headText{font:700 15px Arial,sans-serif;fill:#172033}
+      .line{stroke:#94a3b8;stroke-width:1.4;stroke-dasharray:5 5}
+      .arrow{stroke:#334155;stroke-width:1.7;marker-end:url(#arrow)}
+      .selfArrow{stroke:#94a3b8;stroke-width:1.2;fill:none;marker-end:url(#arrow)}
+      .msg{font:13px Arial,sans-serif;fill:#1f2937}
+      .boxBlock{fill:#fef2f2;stroke:#fca5a5;stroke-width:1.5}
+      .boxAllow{fill:#ecfdf5;stroke:#86efac;stroke-width:1.5}
+      .alt{font:700 13px Arial,sans-serif;fill:#1f2937}
+    </style>
+  </defs>
+  <rect width="980" height="560" fill="#ffffff"/>
+  <text x="40" y="42" class="title">파일 업로드 테스트</text>
+
+  <g transform="translate(40 75)">
+    <rect class="head" width="130" height="44" rx="8"/>
+    <text class="headText" x="65" y="27" text-anchor="middle">사용자</text>
+  </g>
+  <g transform="translate(230 75)">
+    <rect class="head" width="130" height="44" rx="8"/>
+    <text class="headText" x="65" y="27" text-anchor="middle">화면</text>
+  </g>
+  <g transform="translate(420 75)">
+    <rect class="head" width="150" height="44" rx="8"/>
+    <text class="headText" x="75" y="27" text-anchor="middle">Controller</text>
+  </g>
+  <g transform="translate(625 75)">
+    <rect class="head" width="130" height="44" rx="8"/>
+    <text class="headText" x="65" y="27" text-anchor="middle">Service</text>
+  </g>
+  <g transform="translate(820 75)">
+    <rect class="head" width="110" height="44" rx="8"/>
+    <text class="headText" x="55" y="27" text-anchor="middle">DB</text>
+  </g>
+
+  <line class="line" x1="105" y1="119" x2="105" y2="520"/>
+  <line class="line" x1="295" y1="119" x2="295" y2="520"/>
+  <line class="line" x1="495" y1="119" x2="495" y2="520"/>
+  <line class="line" x1="690" y1="119" x2="690" y2="520"/>
+  <line class="line" x1="875" y1="119" x2="875" y2="520"/>
+
+  <line class="arrow" x1="105" y1="155" x2="295" y2="155"/>
+  <text class="msg" x="150" y="146">파일 선택</text>
+
+  <line class="arrow" x1="295" y1="195" x2="495" y2="195"/>
+  <text class="msg" x="315" y="186">POST /api/v1/files/upload</text>
+
+  <line class="arrow" x1="495" y1="235" x2="690" y2="235"/>
+  <text class="msg" x="535" y="226">validateUpload(file)</text>
+
+  <path class="selfArrow" d="M690 270 C740 270 740 300 690 300"/>
+  <text class="msg" x="710" y="266">파일명 확인, 확장자 추출/정규화</text>
+
+  <line class="arrow" x1="690" y1="335" x2="875" y2="335"/>
+  <text class="msg" x="735" y="326">확장자 정책 조회</text>
+
+  <line class="arrow" x1="875" y1="370" x2="690" y2="370"/>
+  <text class="msg" x="745" y="361">조회 결과</text>
+
+  <rect class="boxBlock" x="210" y="405" width="270" height="58" rx="8"/>
+  <text class="alt" x="345" y="430" text-anchor="middle">차단 확장자</text>
+  <text class="msg" x="345" y="450" text-anchor="middle">allowed=false, 차단 모달 표시</text>
+
+  <rect class="boxAllow" x="510" y="405" width="330" height="58" rx="8"/>
+  <text class="alt" x="675" y="430" text-anchor="middle">허용 확장자</text>
+  <text class="msg" x="675" y="450" text-anchor="middle">uploaded_file 저장, 성공 메시지 표시</text>
+
+  <line class="arrow" x1="690" y1="490" x2="295" y2="490"/>
+  <text class="msg" x="440" y="481">FileUploadResponse 반환</text>
+</svg>

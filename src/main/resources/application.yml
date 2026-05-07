@@ -3,7 +3,7 @@ spring:
     import: optional:file:.env[.properties]
 
   application:
-    name: backend
+    name: flow
 
   datasource:
     url: ${SPRING_DATASOURCE_URL}
