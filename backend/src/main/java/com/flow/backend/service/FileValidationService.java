@@ -41,11 +41,22 @@ public class FileValidationService {
                 .orElse(false);
         String message = blocked ? BLOCKED_MESSAGE : ALLOWED_MESSAGE;
 
+        Long fileId = null;
         if (!blocked) {
-            fileRepository.save(File.of(originalFilename, extension));
+            File savedFile = fileRepository.save(File.of(originalFilename, extension));
+            fileId = savedFile.getId();
         }
 
-        return new FileUploadResponse(!blocked, extension, originalFilename, message);
+        return new FileUploadResponse(fileId, !blocked, extension, originalFilename, message);
+    }
+
+    @Transactional
+    public void deleteUploadedFile(Long id) {
+        if (!fileRepository.existsById(id)) {
+            throw new ExtensionException(ErrorCode.FILE_NOT_FOUND);
+        }
+
+        fileRepository.deleteById(id);
     }
 
     private String extractExtension(String originalFilename) {

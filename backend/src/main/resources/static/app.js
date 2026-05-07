@@ -4,6 +4,7 @@ const state = {
   acceptedFiles: [],
   savingId: null,
   deletingId: null,
+  deletingFileId: null,
   submitting: false,
   uploading: false
 }
@@ -130,6 +131,15 @@ function renderAcceptedFiles() {
         <li>
           <span class="accepted-file-name">${escapeHtml(file.name)}</span>
           <span class="accepted-file-meta">${escapeHtml(file.extension)} · ${escapeHtml(file.size)}</span>
+          <button
+            type="button"
+            class="delete-file-button"
+            data-id="${file.id}"
+            title="${escapeHtml(file.name)} 삭제"
+            ${state.deletingFileId === file.id ? 'disabled' : ''}
+          >
+            ×
+          </button>
         </li>
       `).join('')}
     </ul>
@@ -278,6 +288,7 @@ async function uploadFile(file) {
       state.acceptedFiles = [
         ...state.acceptedFiles,
         {
+          id: result.fileId,
           name: result.originalFilename,
           extension: result.extension,
           size: formatFileSize(file.size)
@@ -293,6 +304,30 @@ async function uploadFile(file) {
     state.uploading = false
     $('#upload-title').text('파일 선택')
     $('#upload-file-input').prop('disabled', false).val('')
+    renderAcceptedFiles()
+  }
+}
+
+async function removeUploadedFile(id) {
+  if (!id || state.deletingFileId) {
+    return
+  }
+
+  state.deletingFileId = id
+  renderAcceptedFiles()
+  renderNotice('#upload-notice', null)
+
+  try {
+    await request({
+      url: `/api/v1/files/${id}`,
+      method: 'DELETE'
+    })
+    state.acceptedFiles = state.acceptedFiles.filter((file) => file.id !== id)
+    renderNotice('#upload-notice', { type: 'success', message: '파일이 삭제되었습니다.' }, 'below')
+  } catch (error) {
+    renderNotice('#upload-notice', { type: 'error', message: error.message }, 'below')
+  } finally {
+    state.deletingFileId = null
     renderAcceptedFiles()
   }
 }
@@ -318,6 +353,9 @@ $(function () {
   $('#upload-file-input').on('change', function () {
     const [file] = this.files
     uploadFile(file)
+  })
+  $(document).on('click', '.delete-file-button', function () {
+    removeUploadedFile(Number($(this).data('id')))
   })
   $('#blocked-modal-close').on('click', function () {
     $('#blocked-modal').prop('hidden', true)

@@ -10,7 +10,8 @@ public enum ErrorCode {
     FIXED_EXTENSION_DELETE_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "고정 확장자는 삭제할 수 없습니다."),
     EMPTY_FILE(HttpStatus.BAD_REQUEST, "파일이 비어 있습니다."),
     MISSING_FILENAME(HttpStatus.BAD_REQUEST, "파일명이 없습니다."),
-    MISSING_EXTENSION(HttpStatus.BAD_REQUEST, "확장자가 없는 파일은 업로드할 수 없습니다.");
+    MISSING_EXTENSION(HttpStatus.BAD_REQUEST, "확장자가 없는 파일은 업로드할 수 없습니다."),
+    FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 파일입니다.");
 
     private final HttpStatus status;
     private final String message;

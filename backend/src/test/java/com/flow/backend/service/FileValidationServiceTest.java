@@ -76,14 +76,26 @@ class FileValidationServiceTest {
         FileUploadResponse response = fileValidationService.validateUpload(file);
 
         assertThat(response.allowed()).isTrue();
+        assertThat(response.fileId()).isNotNull();
         assertThat(response.extension()).isEqualTo("png");
         assertThat(response.message()).isEqualTo("업로드 가능한 확장자입니다.");
         assertThat(fileRepository.findAll())
                 .singleElement()
                 .satisfies(savedFile -> {
+                    assertThat(savedFile.getId()).isEqualTo(response.fileId());
                     assertThat(savedFile.getFilename()).isEqualTo("test.png");
                     assertThat(savedFile.getExtension()).isEqualTo("png");
                 });
+    }
+
+    @Test
+    void deleteUploadedFileDeletesSavedFile() {
+        MockMultipartFile file = new MockMultipartFile("file", "test.png", "image/png", "test".getBytes());
+        FileUploadResponse response = fileValidationService.validateUpload(file);
+
+        fileValidationService.deleteUploadedFile(response.fileId());
+
+        assertThat(fileRepository.findById(response.fileId())).isEmpty();
     }
 
     @Test
