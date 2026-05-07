@@ -22,6 +22,28 @@ function normalizeExtension(value) {
   return value.trim().replace(/^\.+/, '').toLowerCase()
 }
 
+function validateExtensionInput(value) {
+  const normalized = normalizeExtension(value)
+
+  if (!normalized) {
+    return '확장자를 입력해주세요.'
+  }
+
+  if (normalized.length > 20) {
+    return '확장자는 최대 20자까지 입력할 수 있습니다.'
+  }
+
+  if (normalized.includes('.')) {
+    return '파일명이 아닌 확장자만 입력해주세요.'
+  }
+
+  if (!/^[a-z0-9]+$/.test(normalized)) {
+    return '확장자는 영문과 숫자만 입력할 수 있습니다.'
+  }
+
+  return ''
+}
+
 function formatFileSize(size) {
   if (size < 1024) {
     return `${size} B`
@@ -209,7 +231,14 @@ async function toggleFixed(id) {
 
 async function addCustomExtension(value) {
   const normalized = normalizeExtension(value)
-  if (!normalized || state.submitting) {
+  const validationMessage = validateExtensionInput(value)
+
+  if (validationMessage) {
+    renderNotice('#custom-notice', { type: 'error', message: validationMessage }, 'below-form')
+    return
+  }
+
+  if (state.submitting) {
     return
   }
 
@@ -338,10 +367,16 @@ $(function () {
   })
   $('#custom-extension-input').on('input', function () {
     const normalized = normalizeExtension($(this).val())
+    const validationMessage = validateExtensionInput($(this).val())
     $('#custom-extension-preview')
       .prop('hidden', !normalized)
       .text(normalized ? `저장값: ${normalized}` : '')
-    $('#custom-submit-button').prop('disabled', !normalized || state.submitting)
+    $('#custom-submit-button').prop('disabled', Boolean(validationMessage) || state.submitting)
+    if (validationMessage && normalized) {
+      renderNotice('#custom-notice', { type: 'error', message: validationMessage }, 'below-form')
+    } else {
+      renderNotice('#custom-notice', null)
+    }
   })
   $('#custom-extension-form').on('submit', function (event) {
     event.preventDefault()
