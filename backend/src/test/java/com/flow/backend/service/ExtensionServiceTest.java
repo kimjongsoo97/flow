@@ -65,18 +65,21 @@ class ExtensionServiceTest {
     }
 
     @Test
-    void createCustomExtensionAllowsDefaultFixedOptionWhenItIsNotChecked() {
-        ExtensionResponse response = extensionService.createCustomExtension(
-                new CustomExtensionCreateRequest("EXE")
-        );
+    void createCustomExtensionRejectsDuplicateWithUncheckedFixedExtension() {
+        extensionRepository.save(Extension.fixed("exe"));
 
-        assertThat(response.extension()).isEqualTo("exe");
-        assertThat(response.type()).isEqualTo(ExtensionType.CUSTOM);
+        assertThatThrownBy(() -> extensionService.createCustomExtension(
+                new CustomExtensionCreateRequest("EXE")
+        ))
+                .isInstanceOf(ExtensionException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.DUPLICATE_EXTENSION);
     }
 
     @Test
     void createCustomExtensionRejectsDuplicateWithCheckedFixedExtension() {
-        extensionService.updateFixedExtension(1L, new FixedExtensionUpdateRequest(true));
+        Extension fixed = extensionRepository.save(Extension.fixed("exe"));
+        fixed.updateChecked(true);
 
         assertThatThrownBy(() -> extensionService.createCustomExtension(
                 new CustomExtensionCreateRequest("EXE")
@@ -112,8 +115,10 @@ class ExtensionServiceTest {
 
     @Test
     void updateFixedExtensionChangesCheckedValue() {
+        Extension fixed = extensionRepository.save(Extension.fixed("exe"));
+
         ExtensionResponse response = extensionService.updateFixedExtension(
-                1L,
+                fixed.getId(),
                 new FixedExtensionUpdateRequest(true)
         );
 
@@ -123,16 +128,18 @@ class ExtensionServiceTest {
     }
 
     @Test
-    void updateFixedExtensionDeletesRowWhenUnchecked() {
-        extensionService.updateFixedExtension(1L, new FixedExtensionUpdateRequest(true));
+    void updateFixedExtensionKeepsRowWhenUnchecked() {
+        Extension fixed = extensionRepository.save(Extension.fixed("exe"));
+        fixed.updateChecked(true);
 
         ExtensionResponse response = extensionService.updateFixedExtension(
-                1L,
+                fixed.getId(),
                 new FixedExtensionUpdateRequest(false)
         );
 
         assertThat(response.checked()).isFalse();
-        assertThat(extensionRepository.findByExtensionAndType("exe", ExtensionType.FIXED)).isEmpty();
+        assertThat(extensionRepository.findByExtensionAndType("exe", ExtensionType.FIXED))
+                .hasValueSatisfying(extension -> assertThat(extension.isChecked()).isFalse());
     }
 
     @Test
@@ -147,16 +154,30 @@ class ExtensionServiceTest {
     }
 
     @Test
-    void updateFixedExtensionRejectsDuplicateWithCustomExtension() {
-        extensionService.createCustomExtension(new CustomExtensionCreateRequest("exe"));
+    void updateFixedExtensionRejectsCustomExtensionId() {
+        Extension custom = extensionRepository.save(Extension.custom("exe"));
 
         assertThatThrownBy(() -> extensionService.updateFixedExtension(
-                1L,
+                custom.getId(),
                 new FixedExtensionUpdateRequest(true)
         ))
                 .isInstanceOf(ExtensionException.class)
                 .extracting("errorCode")
-                .isEqualTo(ErrorCode.DUPLICATE_EXTENSION);
+                .isEqualTo(ErrorCode.EXTENSION_NOT_FOUND);
+    }
+
+    @Test
+    void getFixedExtensionsReturnsFixedRowsFromDatabase() {
+        Extension exe = extensionRepository.save(Extension.fixed("exe"));
+        Extension dll = extensionRepository.save(Extension.fixed("dll"));
+        extensionRepository.save(Extension.custom("zip"));
+
+        assertThat(extensionService.getFixedExtensions())
+                .extracting(ExtensionResponse::id, ExtensionResponse::extension)
+                .containsExactly(
+                        org.assertj.core.groups.Tuple.tuple(exe.getId(), "exe"),
+                        org.assertj.core.groups.Tuple.tuple(dll.getId(), "dll")
+                );
     }
 
     @Test

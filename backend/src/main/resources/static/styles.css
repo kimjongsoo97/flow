@@ -4,8 +4,6 @@
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
 }
 
 * {
@@ -27,17 +25,23 @@ button {
   cursor: pointer;
 }
 
-button:disabled {
+button:disabled,
+input:disabled {
   cursor: not-allowed;
   opacity: 0.62;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
 }
 
 .app-shell {
   min-height: 100vh;
   padding: 40px 20px;
-  background:
-    linear-gradient(180deg, rgba(238, 243, 248, 0.92), rgba(238, 243, 248, 1)),
-    #eef3f8;
+  background: #eef3f8;
 }
 
 .workspace {
@@ -58,12 +62,6 @@ button:disabled {
   color: #426188;
   font-size: 13px;
   font-weight: 700;
-}
-
-h1,
-h2,
-p {
-  margin: 0;
 }
 
 h1 {
@@ -102,21 +100,36 @@ h2 {
   border: 0;
 }
 
-.notice {
-  margin-bottom: 16px;
-  padding: 13px 16px;
+.notice,
+.section-notice {
+  padding: 12px 14px;
   border-radius: 8px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
+  line-height: 1.5;
 }
 
-.notice.error {
+.notice {
+  margin-bottom: 16px;
+}
+
+.section-notice.below {
+  margin: 14px 0 0;
+}
+
+.section-notice.below-form {
+  margin: -4px 0 18px;
+}
+
+.notice.error,
+.section-notice.error {
   color: #8a1f25;
   background: #ffe8e8;
   border: 1px solid #ffc2c2;
 }
 
-.notice.success {
+.notice.success,
+.section-notice.success {
   color: #17623a;
   background: #e4f8ed;
   border: 1px solid #bce9cf;
@@ -182,17 +195,6 @@ h2 {
   background: #e7eef6;
   font-size: 13px;
   font-weight: 800;
-}
-
-.guide-box {
-  margin: -4px 0 18px;
-  padding: 12px 14px;
-  border: 1px solid #cfe0f0;
-  border-radius: 8px;
-  color: #38536f;
-  background: #f1f7fc;
-  font-size: 14px;
-  line-height: 1.5;
 }
 
 .loading-row,
@@ -295,6 +297,99 @@ h2 {
   font-weight: 800;
 }
 
+.file-picker {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 12px;
+  border: 1px solid #8fb0d3;
+  border-radius: 8px;
+  background: #f4f9ff;
+  cursor: pointer;
+}
+
+.file-picker input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.file-picker-title {
+  min-width: 86px;
+  padding: 9px 12px;
+  border-radius: 7px;
+  color: #ffffff;
+  background: #2670c9;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.file-picker-name {
+  min-width: 0;
+  overflow: hidden;
+  color: #25344a;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.accepted-files {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid #e2eaf3;
+}
+
+.accepted-files h3 {
+  margin: 0 0 12px;
+  color: #182235;
+  font-size: 16px;
+}
+
+.empty-state.compact {
+  padding: 12px 0 0;
+  text-align: left;
+}
+
+.accepted-files ul {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.accepted-files li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid #d8e2ed;
+  border-radius: 8px;
+  background: #f8fbfe;
+}
+
+.accepted-file-name {
+  min-width: 0;
+  overflow: hidden;
+  color: #25344a;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.accepted-file-meta {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 800;
+}
+
 .chip-list {
   display: flex;
   flex-wrap: wrap;
@@ -335,13 +430,48 @@ h2 {
   line-height: 1;
 }
 
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.42);
+}
+
+.modal-backdrop[hidden] {
+  display: none;
+}
+
+.alert-modal {
+  width: min(420px, 100%);
+  padding: 24px;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
+}
+
+.alert-modal h3 {
+  color: #8a1f25;
+  font-size: 20px;
+  line-height: 1.35;
+}
+
+.alert-modal p {
+  margin: 10px 0 20px;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.alert-modal .primary-button {
+  width: 100%;
+}
+
 @media (max-width: 640px) {
   .app-shell {
     padding: 24px 14px;
-  }
-
-  .page-header {
-    align-items: flex-start;
   }
 
   h1 {
@@ -364,5 +494,10 @@ h2 {
 
   .fixed-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .file-picker,
+  .accepted-files li {
+    grid-template-columns: 1fr;
   }
 }

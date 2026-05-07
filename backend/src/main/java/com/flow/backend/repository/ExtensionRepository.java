@@ -10,6 +10,8 @@ public interface ExtensionRepository extends JpaRepository<Extension, Long> {
 
     boolean existsByExtension(String extension);
 
+    Optional<Extension> findByExtension(String extension);
+
     boolean existsByExtensionAndType(String extension, ExtensionType type);
 
     long countByType(ExtensionType type);
@@ -19,6 +21,4 @@ public interface ExtensionRepository extends JpaRepository<Extension, Long> {
     Optional<Extension> findByIdAndType(Long id, ExtensionType type);
 
     Optional<Extension> findByExtensionAndType(String extension, ExtensionType type);
-
-    void deleteAllByTypeAndCheckedFalse(ExtensionType type);
 }

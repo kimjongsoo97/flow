@@ -23,15 +23,4 @@ public record ExtensionResponse(
                 extension.getUpdatedAt()
         );
     }
-
-    public static ExtensionResponse fixedOption(Long id, String extension, boolean checked) {
-        return new ExtensionResponse(
-                id,
-                extension,
-                ExtensionType.FIXED,
-                checked,
-                null,
-                null
-        );
-    }
 }

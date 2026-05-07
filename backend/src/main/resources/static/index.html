@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>파일 확장자 차단 관리</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace">
+        <header class="page-header">
+          <div>
+            <p class="eyebrow">File Extension Blocker</p>
+            <h1>파일 확장자 차단 관리</h1>
+          </div>
+        </header>
+
+        <div id="global-notice"></div>
+
+        <div class="summary-grid">
+          <div class="metric">
+            <span>고정 확장자</span>
+            <strong id="fixed-summary">0 / 0</strong>
+          </div>
+          <div class="metric">
+            <span>커스텀 확장자</span>
+            <strong id="custom-summary">0 / 200</strong>
+          </div>
+        </div>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>고정 확장자</h2>
+            </div>
+          </div>
+          <div id="fixed-content" class="loading-row">목록을 불러오는 중입니다.</div>
+          <div id="fixed-notice"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>커스텀 확장자</h2>
+            </div>
+            <span class="count-badge" id="custom-count-badge">0 / 200</span>
+          </div>
+          <form class="add-form" id="custom-extension-form">
+            <div class="input-wrap">
+              <input id="custom-extension-input" type="text" maxlength="40" placeholder="예: zip" aria-label="추가 확장자" />
+              <span class="preview" id="custom-extension-preview" hidden></span>
+            </div>
+            <button class="primary-button" id="custom-submit-button" type="submit" disabled>추가</button>
+          </form>
+          <div id="custom-notice"></div>
+          <div id="custom-content" class="loading-row">목록을 불러오는 중입니다.</div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>업로드 테스트</h2>
+            </div>
+          </div>
+          <label class="file-picker">
+            <input id="upload-file-input" type="file" />
+            <span class="file-picker-title" id="upload-title">파일 선택</span>
+            <span class="file-picker-name">선택한 파일이 없습니다.</span>
+          </label>
+          <div id="upload-notice"></div>
+          <section class="accepted-files">
+            <h3>허용된 파일</h3>
+            <div id="accepted-file-content" class="empty-state compact">아직 추가한 파일이 없습니다.</div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <div class="modal-backdrop" id="blocked-modal" role="presentation" hidden>
+      <section class="alert-modal" role="alertdialog" aria-modal="true" aria-labelledby="blocked-modal-title">
+        <h3 id="blocked-modal-title">허용되지 않는 파일입니다.</h3>
+        <p id="blocked-modal-message">파일을 확인해주세요.</p>
+        <button class="primary-button" id="blocked-modal-close" type="button">확인</button>
+      </section>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="/app.js"></script>
+  </body>
+</html>
