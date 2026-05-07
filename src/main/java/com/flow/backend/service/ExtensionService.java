@@ -26,10 +26,12 @@ public class ExtensionService {
 
     private final ExtensionRepository extensionRepository;
 
+    // 고정 확장자와 커스텀 확장자 목록을 함께 조회한다.
     public ExtensionListResponse getExtensions() {
         return new ExtensionListResponse(getFixedExtensions(), getCustomExtensions());
     }
 
+    // 고정 확장자 목록과 체크 상태를 조회한다.
     public List<ExtensionResponse> getFixedExtensions() {
         return extensionRepository.findAllByTypeOrderByIdAsc(ExtensionType.FIXED)
                 .stream()
@@ -37,6 +39,7 @@ public class ExtensionService {
                 .toList();
     }
 
+    // 사용자가 추가한 커스텀 확장자 목록을 조회한다.
     public List<ExtensionResponse> getCustomExtensions() {
         return extensionRepository.findAllByTypeOrderByIdAsc(ExtensionType.CUSTOM)
                 .stream()
@@ -44,6 +47,7 @@ public class ExtensionService {
                 .toList();
     }
 
+    // 고정 확장자의 체크 상태를 변경하고, 같은 커스텀이 있으면 체크를 막는다.
     @Transactional
     public ExtensionResponse updateFixedExtension(Long id, FixedExtensionUpdateRequest request) {
         Extension extension = extensionRepository.findByIdAndType(id, ExtensionType.FIXED)
@@ -58,6 +62,7 @@ public class ExtensionService {
         return ExtensionResponse.from(extension);
     }
 
+    // 커스텀 확장자를 추가하고, 중복 및 체크된 고정 확장자와의 충돌을 검증한다.
     @Transactional
     public ExtensionResponse createCustomExtension(CustomExtensionCreateRequest request) {
         String normalizedExtension = ExtensionNormalizer.normalize(request.extension());
@@ -79,6 +84,7 @@ public class ExtensionService {
         return ExtensionResponse.from(extension);
     }
 
+    // 커스텀 확장자를 삭제하며, 고정 확장자 삭제 요청은 거절한다.
     @Transactional
     public void deleteCustomExtension(Long id) {
         Extension extension = extensionRepository.findById(id)
@@ -91,6 +97,7 @@ public class ExtensionService {
         extensionRepository.delete(extension);
     }
 
+    // 확장자 입력값의 길이와 허용 문자를 검증한다.
     private void validateExtension(String extension) {
         if (extension.isBlank()
                 || extension.length() > MAX_EXTENSION_LENGTH

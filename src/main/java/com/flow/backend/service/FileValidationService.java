@@ -24,6 +24,7 @@ public class FileValidationService {
     private final ExtensionRepository extensionRepository;
     private final FileRepository fileRepository;
 
+    // 업로드 파일의 확장자를 검사하고, 허용된 파일만 저장한다.
     @Transactional
     public FileUploadResponse validateUpload(MultipartFile file) {
         if (file == null || file.isEmpty()) {
@@ -50,6 +51,7 @@ public class FileValidationService {
         return new FileUploadResponse(fileId, !blocked, extension, originalFilename, message);
     }
 
+    // 허용 파일 목록에서 업로드 파일 기록을 삭제한다.
     @Transactional
     public void deleteUploadedFile(Long id) {
         if (!fileRepository.existsById(id)) {
@@ -59,6 +61,7 @@ public class FileValidationService {
         fileRepository.deleteById(id);
     }
 
+    // 파일명에서 마지막 점 뒤의 확장자만 추출해 정규화한다.
     private String extractExtension(String originalFilename) {
         int lastDotIndex = originalFilename.lastIndexOf('.');
         if (lastDotIndex < 0 || lastDotIndex == originalFilename.length() - 1) {
@@ -72,6 +75,7 @@ public class FileValidationService {
         return extension;
     }
 
+    // 커스텀 확장자이거나 체크된 고정 확장자면 차단 대상으로 본다.
     private boolean isBlocked(Extension extension) {
         return extension.getType() == ExtensionType.CUSTOM
                 || (extension.getType() == ExtensionType.FIXED && extension.isChecked());
