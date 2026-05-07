@@ -1,6 +1,7 @@
 package com.flow.backend.config;
 
 import com.flow.backend.domain.entity.Extension;
+import com.flow.backend.domain.enums.ExtensionType;
 import com.flow.backend.repository.ExtensionRepository;
 import com.flow.backend.service.ExtensionNormalizer;
 import java.util.List;
@@ -26,7 +27,7 @@ public class FixedExtensionInitializer implements ApplicationRunner {
         defaultFixedExtensions.stream()
                 .map(ExtensionNormalizer::normalize)
                 .filter(extension -> !extension.isBlank())
-                .filter(extension -> !extensionRepository.existsByExtension(extension))
+                .filter(extension -> !extensionRepository.existsByExtensionAndType(extension, ExtensionType.FIXED))
                 .forEach(extension -> extensionRepository.save(Extension.fixed(extension)));
     }
 }

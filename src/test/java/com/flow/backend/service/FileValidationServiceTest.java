@@ -70,6 +70,19 @@ class FileValidationServiceTest {
     }
 
     @Test
+    void validateUploadBlocksCustomExtensionEvenWhenUncheckedFixedExtensionExists() {
+        extensionRepository.save(Extension.fixed("exe"));
+        extensionRepository.save(Extension.custom("exe"));
+        MockMultipartFile file = new MockMultipartFile("file", "TEST.EXE", "application/octet-stream", "test".getBytes());
+
+        FileUploadResponse response = fileValidationService.validateUpload(file);
+
+        assertThat(response.allowed()).isFalse();
+        assertThat(response.extension()).isEqualTo("exe");
+        assertThat(fileRepository.count()).isZero();
+    }
+
+    @Test
     void validateUploadAllowsUnknownExtension() {
         MockMultipartFile file = new MockMultipartFile("file", "test.png", "image/png", "test".getBytes());
 

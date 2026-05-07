@@ -49,6 +49,11 @@ public class ExtensionService {
         Extension extension = extensionRepository.findByIdAndType(id, ExtensionType.FIXED)
                 .orElseThrow(() -> new ExtensionException(ErrorCode.EXTENSION_NOT_FOUND));
 
+        if (request.checked()
+                && extensionRepository.existsByExtensionAndType(extension.getExtension(), ExtensionType.CUSTOM)) {
+            throw new ExtensionException(ErrorCode.DUPLICATE_EXTENSION);
+        }
+
         extension.updateChecked(request.checked());
         return ExtensionResponse.from(extension);
     }
@@ -58,9 +63,14 @@ public class ExtensionService {
         String normalizedExtension = ExtensionNormalizer.normalize(request.extension());
         validateExtension(normalizedExtension);
 
-        if (extensionRepository.existsByExtension(normalizedExtension)) {
+        if (extensionRepository.existsByExtensionAndType(normalizedExtension, ExtensionType.CUSTOM)) {
             throw new ExtensionException(ErrorCode.DUPLICATE_EXTENSION);
         }
+        extensionRepository.findByExtensionAndType(normalizedExtension, ExtensionType.FIXED)
+                .filter(Extension::isChecked)
+                .ifPresent(extension -> {
+                    throw new ExtensionException(ErrorCode.DUPLICATE_EXTENSION);
+                });
         if (extensionRepository.countByType(ExtensionType.CUSTOM) >= MAX_CUSTOM_EXTENSION_COUNT) {
             throw new ExtensionException(ErrorCode.CUSTOM_EXTENSION_LIMIT_EXCEEDED);
         }

@@ -36,9 +36,9 @@ public class FileValidationService {
         }
 
         String extension = extractExtension(originalFilename);
-        boolean blocked = extensionRepository.findByExtension(extension)
-                .map(this::isBlocked)
-                .orElse(false);
+        boolean blocked = extensionRepository.findAllByExtension(extension)
+                .stream()
+                .anyMatch(this::isBlocked);
         String message = blocked ? BLOCKED_MESSAGE : ALLOWED_MESSAGE;
 
         Long fileId = null;

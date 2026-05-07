@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,7 +19,13 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "extensions")
+@Table(
+        name = "extensions",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_extensions_extension_type",
+                columnNames = {"extension", "type"}
+        )
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Extension {
 
@@ -26,7 +33,7 @@ public class Extension {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 20, unique = true)
+    @Column(nullable = false, length = 20)
     private String extension;
 
     @Enumerated(EnumType.STRING)

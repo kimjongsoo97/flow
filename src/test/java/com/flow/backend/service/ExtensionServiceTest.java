@@ -65,15 +65,20 @@ class ExtensionServiceTest {
     }
 
     @Test
-    void createCustomExtensionRejectsDuplicateWithUncheckedFixedExtension() {
+    void createCustomExtensionAllowsDuplicateWithUncheckedFixedExtension() {
         extensionRepository.save(Extension.fixed("exe"));
 
-        assertThatThrownBy(() -> extensionService.createCustomExtension(
+        ExtensionResponse response = extensionService.createCustomExtension(
                 new CustomExtensionCreateRequest("EXE")
-        ))
-                .isInstanceOf(ExtensionException.class)
-                .extracting("errorCode")
-                .isEqualTo(ErrorCode.DUPLICATE_EXTENSION);
+        );
+
+        assertThat(response.extension()).isEqualTo("exe");
+        assertThat(response.type()).isEqualTo(ExtensionType.CUSTOM);
+        assertThat(response.checked()).isTrue();
+        assertThat(extensionRepository.findAllByExtension("exe"))
+                .hasSize(2)
+                .extracting(Extension::getType)
+                .containsExactlyInAnyOrder(ExtensionType.FIXED, ExtensionType.CUSTOM);
     }
 
     @Test
@@ -140,6 +145,36 @@ class ExtensionServiceTest {
         assertThat(response.checked()).isFalse();
         assertThat(extensionRepository.findByExtensionAndType("exe", ExtensionType.FIXED))
                 .hasValueSatisfying(extension -> assertThat(extension.isChecked()).isFalse());
+    }
+
+    @Test
+    void updateFixedExtensionRejectsCheckedWhenCustomExtensionExists() {
+        Extension fixed = extensionRepository.save(Extension.fixed("exe"));
+        extensionRepository.save(Extension.custom("exe"));
+
+        assertThatThrownBy(() -> extensionService.updateFixedExtension(
+                fixed.getId(),
+                new FixedExtensionUpdateRequest(true)
+        ))
+                .isInstanceOf(ExtensionException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.DUPLICATE_EXTENSION);
+
+        assertThat(extensionRepository.findById(fixed.getId()))
+                .hasValueSatisfying(extension -> assertThat(extension.isChecked()).isFalse());
+    }
+
+    @Test
+    void updateFixedExtensionAllowsUncheckedWhenCustomExtensionExists() {
+        Extension fixed = extensionRepository.save(Extension.fixed("exe"));
+        extensionRepository.save(Extension.custom("exe"));
+
+        ExtensionResponse response = extensionService.updateFixedExtension(
+                fixed.getId(),
+                new FixedExtensionUpdateRequest(false)
+        );
+
+        assertThat(response.checked()).isFalse();
     }
 
     @Test
